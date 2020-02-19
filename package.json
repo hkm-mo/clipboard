@@ -1,0 +1,27 @@
+{
+    "name": "electron-clipboard",
+    "version": "0.1.0",
+    "description": "A Clipboard over the Internet.",
+    "main": "./dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "start": "npm run build && electron ./dist/index.js",
+        "runLastBuild": "electron ./dist/index.js"
+    },
+    "keywords": [
+        "electron",
+        "clipboard"
+    ],
+    "author": "hkm-mo",
+    "license": "ISC",
+    "devDependencies": {
+        "electron": "6.1.6",
+        "typescript": "~3.7.5",
+        "@types/uuid": "^3.4.7"
+    },
+    "dependencies": {
+        "dotenv": "^8.2.0",
+        "uuid": "^3.4.0"
+    }
+}
