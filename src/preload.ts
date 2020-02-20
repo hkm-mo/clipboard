@@ -38,6 +38,11 @@ function goNextStep(current: HTMLElement, next: HTMLElement) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.endpoint) {
+        (document.getElementById("endpoint") as HTMLInputElement).value = localStorage.endpoint;
+        (document.getElementById("channelId") as HTMLInputElement).value = localStorage.channelId;
+    }
+    let oxs: ObjectExchangeServerApi;
     let channelId: string;
     let subscription: ObjectExchangeSubscription;
     let loadingMask = new LoadingMask(document.getElementById("loadingMask"));
