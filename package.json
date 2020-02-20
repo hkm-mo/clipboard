@@ -16,12 +16,14 @@
     "author": "hkm-mo",
     "license": "MIT",
     "devDependencies": {
+        "@types/request": "^2.48.4",
         "@types/uuid": "^3.4.7",
         "electron": "6.1.6",
         "typescript": "~3.7.5"
     },
     "dependencies": {
         "dotenv": "^8.2.0",
-        "uuid": "^3.4.0"
+        "uuid": "^3.4.0",
+        "request": "^2.88.2"
     }
 }

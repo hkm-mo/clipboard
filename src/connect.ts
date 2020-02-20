@@ -1,23 +1,19 @@
-import * as path from "path";
-import * as http from "http";
-import * as https from "https";
+import * as url from "url";
+import * as request from "request";
 
-export interface HttpRequestOptions extends http.RequestOptions {
-    body?: any
+export interface HttpRequestOptions extends request.CoreOptions {
 }
-export type HttpIncomingMessage = http.IncomingMessage;
-export type HttpClientRequest = http.ClientRequest;
 
 export class HttpResponse {
-    private req: HttpClientRequest;
-    private res: HttpIncomingMessage;
+    private req: request.Request;
+    private res: request.Response;
     private body: Buffer;
 
     public get statusCode(): number | undefined {
         return this.res.statusCode;
     }
 
-    constructor(res: HttpIncomingMessage, req: HttpClientRequest, body: Buffer) {
+    constructor(res: request.Response, req: request.Request, body: Buffer) {
         this.req = req;
         this.res = res;
         this.body = body;
@@ -35,43 +31,34 @@ export class HttpResponse {
 }
 
 export function connect(endpoint: string, channelId: string, requestOptions: HttpRequestOptions): Promise<HttpResponse> {
-    let request = (endpoint.startsWith("https:") ? https : http).request as
-        (url: string, options: HttpRequestOptions, callback?: (res: HttpIncomingMessage) => void) => HttpClientRequest;
-
-    let body: any = null;
-    if (requestOptions && requestOptions.body) {
-        if (requestOptions.body instanceof URLSearchParams) {
-            body = requestOptions.body.toString();
-            if (!requestOptions.headers) {
-                requestOptions.headers = {};
+    if (requestOptions) {
+        if (requestOptions.body) {
+            if (requestOptions.body instanceof URLSearchParams) {
+                requestOptions.body = requestOptions.body.toString();
+                if (!requestOptions.headers) {
+                    requestOptions.headers = {};
+                }
+                requestOptions.headers["Content-Type"] = "application/x-www-form-urlencoded";
             }
-            requestOptions.headers["Content-Type"] = "application/x-www-form-urlencoded";
+        }
+        if (requestOptions.timeout) {
+            requestOptions.timeout *= 1000;
         }
     }
 
     return new Promise((resolve, reject) => {
-        let req = request(path.join(endpoint, channelId), {
-            timeout: 5,
+        let req = request({
+            url: url.resolve(endpoint, channelId),
+            timeout: 5000,
+            encoding: null,
             ...requestOptions
-        }, res => {
-            let body: Uint8Array[] = [];
-            res.on('data', (chunk) => {
-                body.push(chunk);
-            });
-
-            res.on('end', () => {
-                resolve(new HttpResponse(res, req, Buffer.concat(body)));
-            });
+        }, (error, response, body) =>{
+            if (error) {
+                console.log(error);
+                reject(error);
+            }
+            resolve(new HttpResponse(response, req, body))
         });
-
-        req.on('error', (e) => {
-            reject(`problem with request: ${e.message}`);
-        });
-
-        if (requestOptions.body) {
-            req.write(body || requestOptions.body);
-        }
-        req.end();
 
     });
 }
