@@ -149,7 +149,11 @@
     <div id="setupForm">
         <form class="setupStep active" data-step="channel">
             <div class="inputRow">
-                <label for="accountId">Channel ID:</label>
+                <label for="endpoint">Endpoint:</label>
+                <input name="endpoint" type="url" value="" id="endpoint">
+            </div>
+            <div class="inputRow">
+                <label for="channelId">Channel ID:</label>
                 <input name="channelId" type="text" value="" id="channelId" pattern="^[\dA-Za-z][\w]{4,}[\dA-Za-z]$" title="At least 6 characters width A-Z, 0-9">
             </div>
             <button type="submit">Next</button>

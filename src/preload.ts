@@ -5,8 +5,6 @@ import * as env from "dotenv";
 
 env.config();
 
-let oxs = new ObjectExchangeServerApi(process.env.ENDPOINT);
-
 class LoadingMask {
     private maskDom: HTMLElement;
     constructor(maskDom: HTMLElement) {
@@ -49,12 +47,19 @@ window.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
             switch (this.getAttribute("data-step")) {
                 case "channel":
-                    loadingMask.show();
+                    let endpoint = this["endpoint"].value;
                     channelId = this["channelId"].value;
-                    oxs.channelExists(channelId).then(isExists => {
-                        goNextStep(this, steps[isExists ? 1 : 2]);
-                        loadingMask.hide();
-                    });
+
+                    localStorage.endpoint = endpoint;
+                    localStorage.channelId = channelId;
+                    if (endpoint && channelId) {
+                        loadingMask.show();
+                        oxs = new ObjectExchangeServerApi(endpoint);
+                        oxs.channelExists(channelId).then(isExists => {
+                            goNextStep(this, steps[isExists ? 1 : 2]);
+                            loadingMask.hide();
+                        });
+                    }
                     break;
                 case "password":
                     loadingMask.show();
